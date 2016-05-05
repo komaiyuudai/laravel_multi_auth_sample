@@ -4,7 +4,7 @@ namespace App\Http\Controllers\ClientAccount;
 
 use Illuminate\Http\Request;
 
-use App\ClientAccount;
+use App\Eloquents\ClientAccount;
 use Validator;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
@@ -31,18 +31,14 @@ class AuthController extends Controller
      *
      * @var string
      */
-    // 使用するガード名
-    protected $guard = 'client_accounts';
-    // ログイン後のリダイレクト先
-    protected $redirectTo = '/client/index';
-    // ログアウト後のリダイレクト先
-    protected $redirectAfterLogout = '/';
-    // 認証用のカラム
-    protected $username = 'email';
-    // ログインスロットルとなるまで最高のログイン失敗回数
-    protected $maxLoginAttempts = 5;
-    // ログインスロットルとなってからの待ち秒数
-    protected $lockoutTime = 60;
+    protected $guard = 'client_accounts';                   // 使用するguard名(デフォルトはauth.phpのデフォルト設定してあるguard)
+    protected $registerView = 'client_accounts.register';   // 新規登録画面のview(デフォルトは「auth.register」)
+    protected $loginView = 'client_accounts.login';         // ログインページのview(デフォルトは「auth.authenticate」)
+    protected $redirectTo = '/client/index';                // ログイン後のリダイレクト先(デフォルトは「/home」)
+    protected $redirectAfterLogout = '/';                   // ログアウト後のリダイレクト先(デフォルトは「/」)
+    protected $username = 'email';                          // 認証用のカラム(デフォルトは「email」)
+    protected $maxLoginAttempts = 5;                        // ログインスロットルとなるまで最高のログイン失敗回数(デフォルトは「5」)
+    protected $lockoutTime = 60;                            // ログインスロットルとなってからの待ち秒数(デフォルトは60)
 
 
 
@@ -88,7 +84,6 @@ class AuthController extends Controller
 
     /**
      * ログインフォーム
-     * テンプレートの場所を変える
      */
     public function showLoginForm()
     {
@@ -99,11 +94,10 @@ class AuthController extends Controller
 
     /**
      * 新規登録フォーム
-     * テンプレートの場所を変えるため
      */
     public function showRegistrationForm()
     {
-        return view('client_accounts.register', [
+        return view($this->registerView, [
             'guard' => $this->guard,
         ]);
     }
@@ -133,12 +127,8 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        // バリデート
         $this->validateLogin($request);
 
-        // If the class is using the ThrottlesLogins trait, we can automatically throttle
-        // the login attempts for this application. We'll key this by the username and
-        // the IP address of the client making these requests into this application.
         $throttles = $this->isUsingThrottlesLoginsTrait();
 
         if ($throttles && $lockedOut = $this->hasTooManyLoginAttempts($request)) {
@@ -149,16 +139,13 @@ class AuthController extends Controller
 
         $credentials = $this->getCredentials($request);
 
-        // ログイン処理
         if (Auth::guard($this->getGuard())->attempt($credentials, $request->has('remember'))) {
             $date = date('Y-m-d H:i:s');
-            // ログイン時間登録
             ClientAccount::where('id', Auth::guard($this->guard)->user()->id)->update(['last_login_time' => $date]);
 
             return $this->handleUserWasAuthenticated($request, $throttles);
         }
 
-        // ログインロック
         if ($throttles && ! $lockedOut) {
             $this->incrementLoginAttempts($request);
         }

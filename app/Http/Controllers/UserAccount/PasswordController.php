@@ -21,9 +21,12 @@ class PasswordController extends Controller
 
     use ResetsPasswords;
 
-    public $broker = "user_accounts";
-    public $redirectPath = "/";
-
+    protected $guard = 'user_accounts';                             // auth.guard設定(デフォルトはauth.phpでデフォルト設定したguard)
+    protected $broker = 'user_accounts';                            // auth.passwords設定('デフォルトはauth.phpでデフォルト設定したpasswords')
+    protected $linkRequestView = 'user_accounts.passwords.email';   // メールアドレス入力view(デフォルトは「auth.passwords.email」)
+    protected $resetView = 'user_accounts.passwords.reset';         // パスワードリセットページview(デフォルトは「auth.passwords.reset」or「auth.reset」)
+    protected $subject = 'Password Reset';                          // リセットリンクメールの件名(デフォルトは「Your Password Reset Link」)
+    protected $redirectTo = '/';                                    // パスワード変更後のリダイレクト先(デフォルトは「/home」)
     /**
      * Create a new password controller instance.
      *
@@ -35,29 +38,17 @@ class PasswordController extends Controller
     }
 
     /**
-     * view変更の為
+     * パスワード変更フォーム
      */
     public function showLinkRequestForm()
     {
-        if (property_exists($this, 'linkRequestView')) {
-            return view($this->linkRequestView, [
-                'guard' => $this->broker,
-            ]);
-        }
-
-        if (view()->exists('user_accounts.passwords.email')) {
-            return view('user_accounts.passwords.email', [
-                'guard' => $this->broker,
-            ]);
-        }
-
-        return view('user_accounts.password', [
+        return view($this->linkRequestView, [
             'guard' => $this->broker,
         ]);
     }
 
     /**
-     * view変更の為
+     * メール送信フォーム
      */
     public function showResetForm(Request $request, $token = null)
     {
@@ -69,15 +60,7 @@ class PasswordController extends Controller
 
         $email = $request->input('email');
 
-        if (property_exists($this, 'resetView')) {
-            return view($this->resetView)->with(compact('token', 'email'));
-        }
-
-        if (view()->exists('user_accounts.passwords.reset')) {
-            return view('user_accounts.passwords.reset')->with(compact('token', 'email', 'guard'));
-        }
-
-        return view('user_accounts.reset')->with(compact('token', 'email'));
+        return view($this->resetView)->with(compact('token', 'email', 'guard'));
     }
 
 }

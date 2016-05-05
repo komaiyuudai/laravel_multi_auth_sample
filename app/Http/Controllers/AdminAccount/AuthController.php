@@ -4,13 +4,11 @@ namespace App\Http\Controllers\AdminAccount;
 
 use Illuminate\Http\Request;
 
-// model
-use App\AdminAccount;
+use App\Eloquents\AdminAccount;
 use Validator;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
-// ファサード
 use Auth;
 
 class AuthController extends Controller
@@ -33,18 +31,15 @@ class AuthController extends Controller
      *
      * @var string
      */
-    // 使用するガード名
-    protected $guard = 'admin_accounts';
-    // ログイン後のリダイレクト先
-    protected $redirectTo = '/admin/index';
-    // ログアウト後のリダイレクト先
-    protected $redirectAfterLogout = '/';
-    // 認証用のカラム
-    protected $username = 'email';
-    // ログインスロットルとなるまで最高のログイン失敗回数
-    protected $maxLoginAttempts = 5;
-    // ログインスロットルとなってからの待ち秒数
-    protected $lockoutTime = 60;
+    protected $guard = 'admin_accounts';                    // 使用するguard名(デフォルトはauth.phpのデフォルト設定してあるguard)
+    protected $registerView = 'admin_accounts.register';    // 新規登録画面のview(デフォルトは「auth.register」)
+    protected $loginView = 'admin_accounts.login';          // ログインページのview(デフォルトは「auth.authenticate」)
+    protected $redirectTo = '/admin/index';                 // ログイン後のリダイレクト先(デフォルトは「/home」)
+    protected $redirectAfterLogout = '/';                   // ログアウト後のリダイレクト先(デフォルトは「/」)
+    protected $username = 'email';                          // 認証用のカラム(デフォルトは「email」)
+    protected $maxLoginAttempts = 5;                        // ログインスロットルとなるまで最高のログイン失敗回数(デフォルトは「5」)
+    protected $lockoutTime = 60;                            // ログインスロットルとなってからの待ち秒数(デフォルトは60)
+
 
 
 
@@ -90,29 +85,27 @@ class AuthController extends Controller
 
     /**
      * ログインフォーム
-     * テンプレートの場所を変える為
      */
     public function showLoginForm()
     {
-        return view('admin_accounts.login', [
+        dd();
+        return view($this->loginView, [
             'guard' => $this->guard,
         ]);
     }
 
     /**
      * 新規登録フォーム
-     * テンプレートの場所を変えるため
      */
     public function showRegistrationForm()
     {
-        return view('admin_accounts.register', [
+        return view($this->registerView, [
             'guard' => $this->guard,
         ]);
     }
 
     /**
      * 退会
-     * 自作する必要あり？
      */
     public function withdrawal()
     {
@@ -124,7 +117,6 @@ class AuthController extends Controller
 
     /**
      * 会員削除
-     * 自作する必要あり？
      */
     public function userDelete()
     {
@@ -135,7 +127,7 @@ class AuthController extends Controller
         // ログアウト処理
         Auth::logout();
         // リダイレクト
-        return redirect('/');
+        return redirect($this->redirectAfterLogout);
     }
 
     /**
@@ -143,12 +135,8 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        // バリデート
         $this->validateLogin($request);
 
-        // If the class is using the ThrottlesLogins trait, we can automatically throttle
-        // the login attempts for this application. We'll key this by the username and
-        // the IP address of the client making these requests into this application.
         $throttles = $this->isUsingThrottlesLoginsTrait();
 
         if ($throttles && $lockedOut = $this->hasTooManyLoginAttempts($request)) {
@@ -159,16 +147,14 @@ class AuthController extends Controller
 
         $credentials = $this->getCredentials($request);
 
-        // ログイン処理
         if (Auth::guard($this->getGuard())->attempt($credentials, $request->has('remember'))) {
-            $date = date('Y-m-d H:i:s');
             // ログイン時間登録
+            $date = date('Y-m-d H:i:s');
             AdminAccount::where('id', Auth::guard($this->guard)->user()->id)->update(['last_login_time' => $date]);
 
             return $this->handleUserWasAuthenticated($request, $throttles);
         }
 
-        // ログインロック
         if ($throttles && ! $lockedOut) {
             $this->incrementLoginAttempts($request);
         }

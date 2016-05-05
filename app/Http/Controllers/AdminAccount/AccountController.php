@@ -6,14 +6,14 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-use App\AdminAccount;
+use App\Eloquents\AdminAccount;
 use Auth;
 use Hash;
 use Gate;
 
 class AccountController extends Controller
 {
-    // controller/viewでAuthを使用できるように、ガード名を宣言しておく（必須ではない）
+    // controller/viewでAuthを使用できるように、ガード名を宣言しておく
     protected $guard = 'admin_accounts';
 
     /**

@@ -86,30 +86,20 @@ return [
     */
 
     'providers' => [
-        'users' => [
-            'driver' => 'eloquent',
-            'model' => App\User::class,
-        ],
-
         'admin_accounts' => [
             'driver' => 'eloquent',
-            'model' => App\AdminAccount::class,
+            'model' => App\Eloquents\AdminAccount::class,
         ],
 
         'client_accounts' => [
             'driver' => 'eloquent',
-            'model' => App\ClientAccount::class,
+            'model' => App\Eloquents\ClientAccount::class,
         ],
 
         'user_accounts' => [
             'driver' => 'eloquent',
-            'model' => App\UserAccount::class,
+            'model' => App\Eloquents\UserAccount::class,
         ],
-
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
     ],
 
     /*
@@ -135,28 +125,21 @@ return [
         'admin_accounts' => [
             'provider' => 'admin_accounts',
             'email' => 'admin_accounts.emails.password',
-            'table' => 'password_resets',
+            'table' => 'admin_account_password_resets',
             'expire' => 60,
         ],
         'client_accounts' => [
             'provider' => 'client_accounts',
             'email' => 'client_accounts.emails.password',
-            'table' => 'password_resets',
+            'table' => 'client_account_password_resets',
             'expire' => 60,
         ],
         'user_accounts' => [
             'provider' => 'user_accounts',
             'email' => 'user_accounts.emails.password',
-            'table' => 'password_resets',
+            'table' => 'user_account_password_resets',
             'expire' => 60,
         ],
-        'users' => [
-            'provider' => 'users',
-            'email' => 'auth.emails.password',
-            'table' => 'password_resets',
-            'expire' => 60,
-        ],
-
     ],
 
 ];

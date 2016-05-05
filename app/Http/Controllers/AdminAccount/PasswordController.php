@@ -4,7 +4,6 @@ namespace App\Http\Controllers\AdminAccount;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ResetsPasswords;
-// form使うため
 use Illuminate\Http\Request;
 
 class PasswordController extends Controller
@@ -22,10 +21,12 @@ class PasswordController extends Controller
 
     use ResetsPasswords;
 
-    // ガード名指定（必須）
-    protected $broker = "admin_accounts";
-    // 
-    protected $redirectPath = "/";
+    protected $guard = 'admin_accounts';                            // auth.guard設定(デフォルトはauth.phpでデフォルト設定したguard)
+    protected $broker = 'admin_accounts';                           // auth.passwords設定('デフォルトはauth.phpでデフォルト設定したpasswords')
+    protected $linkRequestView = 'admin_accounts.passwords.email';  // メールアドレス入力view(デフォルトは「auth.passwords.email」)
+    protected $resetView = 'admin_accounts.passwords.reset';        // パスワードリセットページview(デフォルトは「auth.passwords.reset」or「auth.reset」)
+    protected $subject = 'Password Reset';                          // リセットリンクメールの件名(デフォルトは「Your Password Reset Link」)
+    protected $redirectTo = '/';                                    // パスワード変更後のリダイレクト先(デフォルトは「/home」)
 
     /**
      * Create a new password controller instance.
@@ -39,35 +40,20 @@ class PasswordController extends Controller
 
     /**
      * パスワード変更フォーム
-     * view変更の為
      */
     public function showLinkRequestForm()
     {
-        // レイアウトでguard使用している為、アサインしておく
-        if (property_exists($this, 'linkRequestView')) {
-            return view($this->linkRequestView, [
-                'guard' => $this->broker,
-            ]);
-        }
-
-        if (view()->exists('admin_accounts.passwords.email')) {
-            return view('admin_accounts.passwords.email', [
-                'guard' => $this->broker,
-            ]);
-        }
-
-        return view('admin_accounts.password', [
-            'guard' => $this->broker,
+        return view($this->linkRequestView, [
+            'guard' => $this->guard,
         ]);
     }
 
     /**
      * メール送信フォーム
-     * view変更の為
      */
     public function showResetForm(Request $request, $token = null)
     {
-        $guard = $this->broker;
+        $guard = $this->guard;
 
         if (is_null($token)) {
             return $this->getEmail();
@@ -75,14 +61,6 @@ class PasswordController extends Controller
 
         $email = $request->input('email');
 
-        if (property_exists($this, 'resetView')) {
-            return view($this->resetView)->with(compact('token', 'email'));
-        }
-
-        if (view()->exists('admin_accounts.passwords.reset')) {
-            return view('admin_accounts.passwords.reset')->with(compact('token', 'email', 'guard'));
-        }
-
-        return view('admin_accounts.reset')->with(compact('token', 'email'));
+        return view($this->resetView)->with(compact('token', 'email', 'guard'));
     }
 }

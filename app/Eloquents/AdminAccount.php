@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Eloquents;
 
 use Illuminate\Database\Eloquent\Model;
 // ソフトデリート
