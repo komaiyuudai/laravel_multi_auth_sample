@@ -64,7 +64,8 @@ Route::group(['middleware' => ['web']], function () {
             Route::get('withdrawal', 'AdminAccount\AuthController@withdrawal');
             // 退会処理
             Route::post('user_delete', 'AdminAccount\AuthController@userDelete');
-            // 編集処理
+            
+            # 編集処理
             Route::group(['prefix' => 'edit'], function(){
                 // メールアドレス
                 Route::get('email', 'AdminAccount\AccountController@editEmail');
@@ -78,6 +79,7 @@ Route::group(['middleware' => ['web']], function () {
  
     # クライアントアカウント
     Route::group(['prefix' => 'client'], function() {
+        # 未ログイン時
         Route::group(['middleware' => 'guest:client_accounts'], function() {
  
             Route::get('login', 'ClientAccount\AuthController@showLoginForm');
@@ -90,16 +92,27 @@ Route::group(['middleware' => ['web']], function () {
             Route::post('password/email', 'ClientAccount\PasswordController@sendResetLinkEmail');
             Route::post('password/reset', 'ClientAccount\PasswordController@reset');
         });
+        # ログイン時
         Route::group(['middleware' => 'auth:client_accounts'], function() {
             Route::get('index', 'ClientAccount\AccountController@index');
+            Route::get('detail', 'ClientAccount\AccountController@detail');
             Route::get('logout', 'ClientAccount\AuthController@logout');
             Route::get('withdrawal', 'ClientAccount\AuthController@withdrawal');
             Route::post('user_delete', 'ClientAccount\AuthController@userDelete');
+
+            # 編集処理
+            Route::group(['prefix' => 'edit'], function(){
+                Route::get('email', 'ClientAccount\AccountController@editEmail');
+                Route::post('register_email', 'ClientAccount\AccountController@registerEmail');
+                Route::get('password', 'ClientAccount\AccountController@editPassword');
+                Route::post('register_pass', 'ClientAccount\AccountController@registerPassword');
+            });
         });
     });
  
     # ユーザーアカウント
     Route::group(['prefix' => 'user'], function() {
+        # 未ログイン時
         Route::group(['middleware' => 'guest:user_accounts'], function() {
  
             Route::get('login', 'UserAccount\AuthController@showLoginForm');
@@ -113,11 +126,21 @@ Route::group(['middleware' => ['web']], function () {
             Route::post('password/reset', 'UserAccount\PasswordController@reset');
         });
  
+        # ログイン時
         Route::group(['middleware' => 'auth:user_accounts'], function() {
             Route::get('index', 'UserAccount\AccountController@index');
+            Route::get('detail', 'UserAccount\AccountController@detail');
             Route::get('logout', 'UserAccount\AuthController@logout');
             Route::get('withdrawal', 'UserAccount\AuthController@withdrawal');
             Route::post('user_delete', 'UserAccount\AuthController@userDelete');
+
+            # 編集処理
+            Route::group(['prefix' => 'edit'], function(){
+                Route::get('email', 'UserAccount\AccountController@editEmail');
+                Route::post('register_email', 'UserAccount\AccountController@registerEmail');
+                Route::get('password', 'UserAccount\AccountController@editPassword');
+                Route::post('register_pass', 'UserAccount\AccountController@registerPassword');
+            });
         });
     });
 });

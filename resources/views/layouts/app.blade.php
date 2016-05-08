@@ -65,9 +65,7 @@
                             <ul class="dropdown-menu" role="menu">
                                 <li><a href="logout"><i class="fa fa-btn fa-sign-out"></i>Logout</a></li>
                                 <li><a href="withdrawal"><i class="fa fa-btn fa-sign-out"></i>Withdrawal</a></li>
-                                @if ($guard == 'admin_accounts')
                                 <li><a href="detail"><i class="fa fa-btn fa-sign-out"></i>Detail</a></li>
-                                @endif
                             </ul>
                         </li>
                     @endif

@@ -63,7 +63,7 @@ class AuthController extends Controller
     {
         return Validator::make($data, [
             'name' => 'required|max:255',
-            'email' => 'required|email|max:255|unique:admin_accounts',
+            'email' => 'required|email|max:255|unique:admin_accounts,email,NULL,id,deleted_at,NULL',
             'password' => 'required|confirmed|min:6',
         ]);
     }
@@ -88,7 +88,6 @@ class AuthController extends Controller
      */
     public function showLoginForm()
     {
-        dd();
         return view($this->loginView, [
             'guard' => $this->guard,
         ]);
