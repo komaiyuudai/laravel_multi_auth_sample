@@ -17,7 +17,6 @@ class CreateAdminAccountsTable extends Migration
             $table->string('name');
             $table->string('email');
             $table->string('password');
-            $table->integer('rank_id')->unsigned();
             $table->timestamp('last_login_time');
             $table->rememberToken();
             $table->softDeletes();
