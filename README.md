@@ -4,15 +4,15 @@
 ### Laravelインストール
 `composer install`
 
+### .env作成
+.env.sampleをコピー
+設定の修正
+
 ### テーブル生成
 `php artisan migrate`
 
 ### Key作成
 `php artisan key:generate`
-
-### .env作成
-.env.sampleをコピー
-設定の修正
 
 ## 機能
 * 新規会員登録
